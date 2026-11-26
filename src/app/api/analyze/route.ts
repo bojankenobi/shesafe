@@ -24,7 +24,10 @@ const FREE_VISION_FALLBACKS = [
 ];
 
 const LANGUAGE_NAMES: Record<Language, string> = {
-  BCMS: "Bosnian/Croatian/Montenegrin/Serbian (BCMS)",
+  SR: "Serbian (ekavica)",
+  BS: "Bosnian (ijekavica)",
+  HR: "Croatian",
+  ME: "Montenegrin (ijekavica)",
   AL: "Albanian",
   MK: "Macedonian (in Cyrillic script)",
 };
@@ -42,7 +45,7 @@ SECURITY & SCOPE RULES:
 - Do not fabricate facts, dates, or usernames that are not present in the input. If evidence is insufficient, state that clearly in the summary.
 - Keep an objective, non-judgmental tone; frame legal mapping as preliminary preparation, not formal legal advice.
 
-Jurisdiction: ${profile.names.BCMS} (${profile.criminalCodeName.BCMS})
+Jurisdiction: ${profile.names[language]} (${profile.criminalCodeName[language]})
 Reference Criminal Code articles for this jurisdiction:
 ${articlesList}
 
@@ -102,7 +105,7 @@ export async function POST(req: NextRequest) {
 
   const {
     country = "SRB",
-    language = "BCMS",
+    language = "SR",
     images = [],
     messageText = "",
     suspectHandle = "",

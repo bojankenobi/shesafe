@@ -73,7 +73,10 @@ export function StepUpload({
   const recognitionRef = useRef<{ stop: () => void } | null>(null);
 
   const speechLocale: Record<Language, string> = {
-    BCMS: "sr-RS",
+    SR: "sr-RS",
+    BS: "bs-BA",
+    HR: "hr-HR",
+    ME: "sr-ME",
     AL: "sq-AL",
     MK: "mk-MK",
   };
@@ -224,67 +227,43 @@ export function StepUpload({
       onSubmit={handleSubmit}
       className="space-y-4 rounded-2xl border border-[#E6E1D6] bg-white p-4 shadow-xs sm:space-y-5 sm:p-6"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h1 className="text-lg font-bold tracking-tight text-[#132238] sm:text-xl">
-            {t.title}
-          </h1>
-          <p className="mt-1 text-xs text-slate-600 sm:text-sm">{t.subtitle}</p>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h1 className="text-base font-bold tracking-tight text-[#132238] sm:text-xl">
+          {t.title}
+        </h1>
         <button
           type="button"
           onClick={() => {
             setErrorMsg(null);
             onLoadDemo();
           }}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-2 text-xs font-semibold text-teal-800 transition-colors hover:bg-teal-100"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-2.5 py-1.5 text-xs font-semibold text-teal-800 transition-colors hover:bg-teal-100"
         >
-          <FlaskConical className="h-4 w-4" />
+          <FlaskConical className="h-3.5 w-3.5" />
           {t.loadDemo}
         </button>
       </div>
 
-      {/* 1-Tap Country Pills */}
-      <div>
-        <span className="mb-2 block text-sm font-semibold text-[#132238]">
-          {t.countryLabel}
-        </span>
-        <div
-          className="grid grid-cols-2 gap-2 sm:grid-cols-3"
-          role="radiogroup"
-          aria-label={t.countryLabel}
+      {/* Compact Persistent Jurisdiction Pill */}
+      <div className="flex items-center justify-between gap-2 rounded-xl border border-[#E6E1D6] bg-[#FBF9F6] px-3 py-2">
+        <label
+          htmlFor="country-select"
+          className="text-xs font-semibold text-slate-600"
         >
-          {COUNTRY_ORDER.map((code) => {
-            const active = country === code;
-            return (
-              <button
-                key={code}
-                type="button"
-                role="radio"
-                aria-checked={active}
-                onClick={() => onCountryChange(code)}
-                className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-left transition-all ${
-                  active
-                    ? "border-[#0F766E] bg-[#0F766E]/8 text-[#132238] ring-1 ring-[#0F766E]"
-                    : "border-[#E6E1D6] bg-[#FBF9F6] text-slate-700 hover:border-slate-300"
-                }`}
-              >
-                <span className="truncate text-xs font-semibold sm:text-sm">
-                  {COUNTRIES[code].names[language]}
-                </span>
-                <span
-                  className={`ml-2 shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${
-                    active
-                      ? "bg-[#0F766E] text-white"
-                      : "bg-slate-200/80 text-slate-600"
-                  }`}
-                >
-                  {code}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+          {t.countryLabel}:
+        </label>
+        <select
+          id="country-select"
+          value={country}
+          onChange={(e) => onCountryChange(e.target.value as CountryCode)}
+          className="cursor-pointer bg-transparent text-right text-xs font-bold text-[#0F766E] focus:outline-none sm:text-sm"
+        >
+          {COUNTRY_ORDER.map((code) => (
+            <option key={code} value={code}>
+              {COUNTRIES[code].names[language]} ({code})
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Image Upload Dropzone (Mobile Gallery Friendly) */}

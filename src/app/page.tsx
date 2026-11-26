@@ -22,9 +22,31 @@ import { generateEvidencePdf } from "@/utils/pdfGenerator";
 import { clearPinStorage } from "@/utils/pinAuth";
 import { createSyntheticDemoImage } from "@/utils/demoScreenshot";
 
+function readSavedLocale(): { language: Language; country: CountryCode } {
+  if (typeof window === "undefined") {
+    return { language: "SR", country: "SRB" };
+  }
+  try {
+    const saved = localStorage.getItem("calc_locale");
+    if (saved) {
+      const parsed = JSON.parse(saved) as {
+        language?: Language;
+        country?: CountryCode;
+      };
+      return {
+        language: parsed.language ?? "SR",
+        country: parsed.country ?? "SRB",
+      };
+    }
+  } catch {
+    // Ignore storage errors
+  }
+  return { language: "SR", country: "SRB" };
+}
+
 export default function HomePage() {
-  const [language, setLanguage] = useState<Language>("BCMS");
-  const [country, setCountry] = useState<CountryCode>("SRB");
+  const [language, setLanguage] = useState<Language>(() => readSavedLocale().language);
+  const [country, setCountry] = useState<CountryCode>(() => readSavedLocale().country);
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   const [images, setImages] = useState<UploadedImage[]>([]);
@@ -71,6 +93,30 @@ export default function HomePage() {
     setShowEmergency(false);
     setIsMasked(true);
   }, [clearAllMemory]);
+
+  const handleLanguageChange = (nextLang: Language) => {
+    setLanguage(nextLang);
+    try {
+      localStorage.setItem(
+        "calc_locale",
+        JSON.stringify({ language: nextLang, country })
+      );
+    } catch {
+      // Ignore storage errors
+    }
+  };
+
+  const handleCountryChange = (nextCountry: CountryCode) => {
+    setCountry(nextCountry);
+    try {
+      localStorage.setItem(
+        "calc_locale",
+        JSON.stringify({ language, country: nextCountry })
+      );
+    } catch {
+      // Ignore storage errors
+    }
+  };
 
   // Register minimal PWA service worker
   useEffect(() => {
@@ -172,13 +218,13 @@ export default function HomePage() {
     <div className="flex min-h-screen flex-col bg-[#FBF9F6] pb-20 sm:pb-8">
       <Navbar
         language={language}
-        onLanguageChange={setLanguage}
+        onLanguageChange={handleLanguageChange}
         onQuickExit={handleQuickExit}
         onOpenSettings={() => setShowSettings(true)}
         onOpenEmergency={() => setShowEmergency(true)}
       />
 
-      <main className="mx-auto w-full max-w-4xl flex-1 space-y-5 px-3 py-5 sm:px-6 sm:py-7">
+      <main className="mx-auto w-full max-w-4xl flex-1 space-y-3 px-3 py-3 sm:space-y-4 sm:px-6 sm:py-6">
         <SafetyBanner language={language} />
 
         {/* Editorial Stepper */}
@@ -211,7 +257,7 @@ export default function HomePage() {
           <StepUpload
             language={language}
             country={country}
-            onCountryChange={setCountry}
+            onCountryChange={handleCountryChange}
             images={images}
             onImagesChange={setImages}
             messageText={messageText}

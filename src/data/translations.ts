@@ -8,6 +8,7 @@ export interface TranslationDict {
   sosBtn: string;
   settings: string;
   zeroStorageTitle: string;
+  zeroStorageShort: string;
   zeroStorageDesc: string;
   zeroStorageLimit: string;
   steps: {
@@ -134,15 +135,15 @@ export interface TranslationDict {
   };
 }
 
-export const TRANSLATIONS: Record<Language, TranslationDict> = {
-  BCMS: {
-    appName: "Digitalni Svedok",
-    appTagline: "Sigurno prikupljanje i pravno pakovanje dokaza digitalnog nasilja",
-    quickExit: "BRZI IZLAZ",
-    quickExitHint: "ESC ×2",
-    sosBtn: "SOS",
-    settings: "AI Podešavanja",
-    zeroStorageTitle: "Zero-Storage Politika Privatnosti",
+const SR_BASE: TranslationDict = {
+  appName: "Digitalni Svedok",
+  appTagline: "Sigurno prikupljanje i pravno pakovanje dokaza digitalnog nasilja",
+  quickExit: "BRZI IZLAZ",
+  quickExitHint: "ESC ×2",
+  sosBtn: "SOS",
+  settings: "AI Podešavanja",
+  zeroStorageTitle: "Zero-Storage Politika Privatnosti",
+  zeroStorageShort: "Zero-Storage • Dokazi ostaju samo u memoriji uređaja",
     zeroStorageDesc:
       "Vaši skrinšotovi i poruke obrađuju se isključivo u memoriji uređaja i nikada se ne čuvaju na serveru ili u bazi podataka.",
     zeroStorageLimit:
@@ -279,12 +280,12 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       evidenceSection: "5. PRILOŽENI VIZUELNI DOKAZI (SKRINŠOTOVI)",
       attachmentLabel: "Prilog",
       sha256Label: "SHA-256 digitalni otisak originala",
-      footerDisclaimer:
-        "Generisano pomoću alata Digitalni Svedok (Zero-Storage). Ovaj dokument služi kao strukturirana priprema dokaza i ne zamenjuje zvaničnu izjavu u policiji/tužilaštvu.",
-    },
+    footerDisclaimer:
+      "Generisano pomoću alata Digitalni Svedok (Zero-Storage). Ovaj dokument služi kao strukturirana priprema dokaza i ne zamenjuje zvaničnu izjavu u policiji/tužilaštvu.",
   },
+};
 
-  AL: {
+const AL_BASE: TranslationDict = {
     appName: "Dëshmitari Digjital",
     appTagline: "Mbledhja e sigurt dhe strukturimi ligjor i provave të dhunës digjitale",
     quickExit: "DALJE E SHPEJTË",
@@ -292,6 +293,7 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
     sosBtn: "SOS",
     settings: "Cilësimet e AI",
     zeroStorageTitle: "Politika e Privatësisë Zero-Storage",
+    zeroStorageShort: "Zero-Storage • Provat mbeten vetëm në memorien e pajisjes",
     zeroStorageDesc:
       "Pamjet dhe tekstet tuaja përpunohen vetëm në memorien e pajisjes dhe nuk ruhen kurrë në server apo bazë të dhënash.",
     zeroStorageLimit:
@@ -428,12 +430,12 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       evidenceSection: "5. PROVAT VIZUALE TË BASHKËNGJITURA",
       attachmentLabel: "Shtojca",
       sha256Label: "Gjurma digjitale SHA-256 e origjinalit",
-      footerDisclaimer:
-        "Gjeneruar me Dëshmitari Digjital (Zero-Storage). Ky dokument shërben si përgatitje e strukturuar e provave dhe nuk zëvendëson deklaratën zyrtare.",
-    },
+    footerDisclaimer:
+      "Gjeneruar me Dëshmitari Digjital (Zero-Storage). Ky dokument shërben si përgatitje e strukturuar e provave dhe nuk zëvendëson deklaratën zyrtare.",
   },
+};
 
-  MK: {
+const MK_BASE: TranslationDict = {
     appName: "Дигитален Сведок",
     appTagline: "Безбедно собирање и правно пакување докази за дигитално насилство",
     quickExit: "БРЗ ИЗЛЕЗ",
@@ -441,6 +443,7 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
     sosBtn: "SOS",
     settings: "AI Поставки",
     zeroStorageTitle: "Zero-Storage Политика за приватност",
+    zeroStorageShort: "Zero-Storage • Доказите остануваат само во меморијата на уредот",
     zeroStorageDesc:
       "Вашите слики и пораки се обработуваат исклучиво во меморијата на уредот и никогаш не се зачувуваат на сервер или база на податоци.",
     zeroStorageLimit:
@@ -579,6 +582,167 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       sha256Label: "SHA-256 дигитален отпечаток на оригиналот",
       footerDisclaimer:
         "Генерирано со Дигитален Сведок (Zero-Storage). Овој документ служи како структурирана подготовка на докази и не ја заменува официјалната изјава.",
+  },
+};
+
+export const TRANSLATIONS: Record<Language, TranslationDict> = {
+  SR: SR_BASE,
+  BS: {
+    ...SR_BASE,
+    appName: "Digitalni Svjedok",
+    settings: "AI Postavke",
+    zeroStorageShort: "Zero-Storage • Dokazi ostaju samo u memoriji uređaja",
+    zeroStorageDesc:
+      "Vaši snimci ekrana i poruke obrađuju se isključivo u memoriji uređaja i nikada se ne čuvaju na serveru ili u bazi podataka.",
+    step1: {
+      ...SR_BASE.step1,
+      title: "Unos dokaza",
+      subtitle:
+        "Otpremite snimke ekrana ili nalijepite tekst prijetnji. Država se pamti automatski.",
+      uploadLabel: "Otpremite snimke ekrana (maks. 5 slika)",
+      messageLabel: "Tekst prijetnji, poruke ili kontekst događaja",
+      messagePlaceholder:
+        "Nalijepite tekst prijetećih poruka, linkove ka objavama ili kratko opišite šta se dogodilo...",
+      suspectPlaceholder: "npr. https://instagram.com/korisnik ili @ime",
+      loadDemo: "Učitaj demo primjer",
+      pasteBtn: "Nalijepi tekst",
+      optionalToggle: "Detalji počinioca i vrijeme (automatski ili ručno)",
+      expressBtn: "Brzi izvještaj (1 klik: Analiza + PDF)",
+    },
+    step2: {
+      ...SR_BASE.step2,
+      subtitle:
+        "Pregledajte klasifikaciju djela, relevantne članove zakona i forenzičke savjete.",
+      demoBadge: "Demo režim (bez API poziva)",
+      fallbackBanner:
+        "Automatska AI analiza trenutno nije dostupna — prikazan je demonstracioni primjer za izabranu državu.",
+      legalTitle: "Relevantni članovi Krivičnog zakona",
+      nextBtn: "Nastavi na PDF i SOS",
+    },
+    step3: {
+      ...SR_BASE.step3,
+      title: "Zvanični PDF izvještaj i SOS kontakti",
+      downloadPdf: "Preuzmi zvanični PDF izvještaj",
+      sharePdf: "Pošalji sigurno (Share)",
+      sosSubtitle: "Organizacije i institucije za izabranu državu:",
+    },
+    pdf: {
+      ...SR_BASE.pdf,
+      reportTitle: "DOKAZNI IZVJEŠTAJ — DIGITALNO NASILJE",
+      reportSubtitle: "Pripremni dokument za policiju i tužilaštvo",
     },
   },
+  HR: {
+    ...SR_BASE,
+    appName: "Digitalni Svjedok",
+    appTagline: "Sigurno prikupljanje i pravno pakiranje dokaza digitalnog nasilja",
+    settings: "AI Postavke",
+    zeroStorageTitle: "Zero-Storage Politika Privatnosti",
+    zeroStorageShort: "Zero-Storage • Dokazi ostaju samo u memoriji uređaja",
+    zeroStorageDesc:
+      "Vaše snimke zaslona i poruke obrađuju se isključivo u memoriji uređaja i nikada se ne pohranjuju na poslužitelju ili u bazi podataka.",
+    zeroStorageLimit:
+      "Napomena: Brzi izlaz briše memoriju aplikacije, ali ne briše povijest preglednika ni već preuzete datoteke. Za demo koristite fiktivne podatke.",
+    step1: {
+      ...SR_BASE.step1,
+      title: "Unos dokaza",
+      subtitle:
+        "Prenesite snimke zaslona ili zalijepite tekst prijetnji. Država se pamti automatski.",
+      countryLabel: "Država (Jurisdikcija)",
+      uploadLabel: "Prenesite snimke zaslona (maks. 5 slika)",
+      uploadHint: "Dodirnite ili povucite slike ovdje (PNG, JPG, WEBP)",
+      uploadMax: "Učitano {count}/5 slika",
+      messageLabel: "Tekst prijetnji, poruke ili kontekst događaja",
+      messagePlaceholder:
+        "Zalijepite tekst prijetećih poruka, poveznice na objave ili kratko opišite što se dogodilo...",
+      suspectLabel: "Korisničko ime / URL profila počinitelja (neobvezno)",
+      dateLabel: "Približan datum i vrijeme (neobvezno)",
+      loadDemo: "Učitaj demo primjer",
+      pasteBtn: "Zalijepi tekst",
+      optionalToggle: "Detalji počinitelja i vrijeme (automatski ili ručno)",
+      expressBtn: "Brzo izvješće (1 klik: Analiza + PDF)",
+      validationError:
+        "Molimo prenesite barem jednu snimku zaslona ili unesite tekst poruke za analizu.",
+    },
+    step2: {
+      ...SR_BASE.step2,
+      subtitle:
+        "Pregledajte klasifikaciju djela, relevantne članke zakona i forenzičke savjete.",
+      fallbackBanner:
+        "Automatska AI analiza trenutačno nije dostupna — prikazan je demonstracijski primjer za odabranu državu.",
+      aiDisclaimer:
+        "Važno: Ovo je preliminarna AI priprema dokaza i ne predstavlja konačnu pravnu kvalifikaciju. Provjerite detalje s odvjetnikom, SOS organizacijom ili državnim odvjetništvom.",
+      legalTitle: "Relevantni članci Kaznenog zakona",
+      checklistTitle: "Forenzička provjera (prije blokiranja)",
+      saveEditBtn: "Spremi izmjene",
+      nextBtn: "Nastavi na PDF i SOS",
+    },
+    step3: {
+      ...SR_BASE.step3,
+      title: "Službeno PDF izvješće i SOS kontakti",
+      subtitle:
+        "Preuzmite strukturirani dokument za policiju ili državno odvjetništvo i pronađite lokalnu podršku.",
+      downloadPdf: "Preuzmi službeno PDF izvješće",
+      sharePdf: "Pošalji sigurno (Share)",
+      pdfNote:
+        "Polja za vaše osobne podatke u PDF-u su ostavljena prazna radi privatnosti — možete ih ispuniti ručno prije predaje policiji.",
+      sosTitle: "Provjereni kontakti za pomoć i prijavu",
+      sosSubtitle: "Organizacije i institucije za odabranu državu:",
+      clearAllBtn: "Obriši sve iz memorije",
+    },
+    pdf: {
+      ...SR_BASE.pdf,
+      reportTitle: "DOKAZNO IZVJEŠĆE — DIGITALNO NASILJE",
+      reportSubtitle: "Pripremni dokument za policiju i državno odvjetništvo",
+      victimSectionTitle: "PODACI O PODNOSITELJU PRIJAVE (Ispuniti ručno)",
+      victimId: "OIB / Broj osobne iskaznice: ________________________________",
+      victimNote:
+        "Napomena: Radi zaštite privatnosti, osobni podaci nisu unošeni u aplikaciju.",
+      evidenceSection: "5. PRILOŽENI VIZUALNI DOKAZI (SNIMKE ZASLONA)",
+      footerDisclaimer:
+        "Generirano pomoću alata Digitalni Svjedok (Zero-Storage). Ovaj dokument služi kao strukturirana priprema dokaza i ne zamjenjuje službenu izjavu u policiji.",
+    },
+  },
+  ME: {
+    ...SR_BASE,
+    appName: "Digitalni Svjedok",
+    appTagline: "Bezbjedno prikupljanje i pravno pakovanje dokaza digitalnog nasilja",
+    zeroStorageShort: "Zero-Storage • Dokazi ostaju samo u memoriji uređaja",
+    zeroStorageDesc:
+      "Vaši snimci ekrana i poruke obrađuju se isključivo u memoriji uređaja i nikada se ne čuvaju na serveru ili u bazi podataka.",
+    step1: {
+      ...SR_BASE.step1,
+      title: "Unos dokaza",
+      subtitle:
+        "Otpremite snimke ekrana ili nalijepite tekst prijetnji. Država se pamti automatski.",
+      uploadLabel: "Otpremite snimke ekrana (maks. 5 slika)",
+      messageLabel: "Tekst prijetnji, poruke ili kontekst događaja",
+      messagePlaceholder:
+        "Nalijepite tekst prijetećih poruka, linkove ka objavama ili kratko opišite šta se desilo...",
+      loadDemo: "Učitaj demo primjer",
+      pasteBtn: "Nalijepi tekst",
+      optionalToggle: "Detalji počinioca i vrijeme (automatski ili ručno)",
+      expressBtn: "Brzi izvještaj (1 klik: Analiza + PDF)",
+    },
+    step2: {
+      ...SR_BASE.step2,
+      subtitle:
+        "Pregledajte klasifikaciju djela, relevantne članove zakona i forenzičke savjete.",
+      fallbackBanner:
+        "Automatska AI analiza trenutno nije dostupna — prikazan je demonstracioni primjer za izabranu državu.",
+      legalTitle: "Relevantni članovi Krivičnog zakonika",
+    },
+    step3: {
+      ...SR_BASE.step3,
+      title: "Zvanični PDF izvještaj i SOS kontakti",
+      downloadPdf: "Preuzmi zvanični PDF izvještaj",
+      sharePdf: "Pošalji bezbjedno (Share)",
+    },
+    pdf: {
+      ...SR_BASE.pdf,
+      reportTitle: "DOKAZNI IZVJEŠTAJ — DIGITALNO NASILJE",
+    },
+  },
+  AL: AL_BASE,
+  MK: MK_BASE,
 };

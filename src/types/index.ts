@@ -1,4 +1,4 @@
-export type Language = "BCMS" | "AL" | "MK";
+export type Language = "SR" | "BS" | "HR" | "ME" | "AL" | "MK";
 
 export type CountryCode = "SRB" | "BIH" | "MNE" | "HRV" | "MKD" | "ALB";
 
@@ -48,11 +48,7 @@ export interface EvidenceSubmission {
 
 export interface SosContact {
   name: string;
-  role: {
-    BCMS: string;
-    AL: string;
-    MK: string;
-  };
+  role: Record<Language, string>;
   phone?: string;
   email?: string;
   website?: string;
@@ -61,16 +57,8 @@ export interface SosContact {
 
 export interface CountryLegalProfile {
   code: CountryCode;
-  names: {
-    BCMS: string;
-    AL: string;
-    MK: string;
-  };
-  criminalCodeName: {
-    BCMS: string;
-    AL: string;
-    MK: string;
-  };
+  names: Record<Language, string>;
+  criminalCodeName: Record<Language, string>;
   keyArticles: {
     article: string;
     topic: string;

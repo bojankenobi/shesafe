@@ -61,7 +61,7 @@ test("PIN SHA-256 hashing is deterministic and distinguishes valid vs invalid PI
   assert.notEqual(validHash, wrongHash);
 });
 
-test("All 6 Western Balkan jurisdictions and 3 languages are defined", () => {
+test("All 6 Western Balkan jurisdictions and 6 languages are defined", () => {
   const legalSrc = fs.readFileSync(
     path.join(ROOT, "src", "data", "legalAndSos.ts"),
     "utf8"
@@ -74,7 +74,7 @@ test("All 6 Western Balkan jurisdictions and 3 languages are defined", () => {
   for (const code of ["SRB", "BIH", "MNE", "HRV", "MKD", "ALB"]) {
     assert.ok(legalSrc.includes(`${code}:`), `Missing country ${code}`);
   }
-  for (const lang of ["BCMS", "AL", "MK"]) {
+  for (const lang of ["SR", "BS", "HR", "ME", "AL", "MK"]) {
     assert.ok(transSrc.includes(`${lang}:`), `Missing language ${lang}`);
   }
 });

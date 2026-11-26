@@ -5,9 +5,27 @@ export const DEMO_INPUTS: Record<
   Language,
   { messageText: string; suspectHandle: string; incidentDate: string }
 > = {
-  BCMS: {
+  SR: {
     messageText:
       "Ako mi se ne javiš do večeras u 22h i ne obrišeš blokadu, poslaću tvoje privatne fotografije svima na poslu i tvojoj porodici. Imam sve sačuvano.",
+    suspectHandle: "https://instagram.com/marko_anon_991 (@marko_anon_991)",
+    incidentDate: "18.11.2026. oko 21:15",
+  },
+  BS: {
+    messageText:
+      "Ako mi se ne javiš do večeras u 22h i ne ukloniš blokadu, poslaću tvoje privatne fotografije svima na poslu i tvojoj porodici. Imam sve sačuvano.",
+    suspectHandle: "https://instagram.com/marko_anon_991 (@marko_anon_991)",
+    incidentDate: "18.11.2026. oko 21:15",
+  },
+  HR: {
+    messageText:
+      "Ako mi se ne javiš do večeras u 22h i ne ukloniš blokadu, poslat ću tvoje privatne fotografije svima na poslu i tvojoj obitelji. Imam sve spremljeno.",
+    suspectHandle: "https://instagram.com/marko_anon_991 (@marko_anon_991)",
+    incidentDate: "18.11.2026. oko 21:15",
+  },
+  ME: {
+    messageText:
+      "Ako mi se ne javiš do večeras u 22h i ne makneš blokadu, poslaću tvoje privatne fotografije svima na poslu i tvojoj porodici. Imam sve sačuvano.",
     suspectHandle: "https://instagram.com/marko_anon_991 (@marko_anon_991)",
     incidentDate: "18.11.2026. oko 21:15",
   },
@@ -107,16 +125,87 @@ export function buildDemoAnalysis(
     };
   }
 
+  if (language === "HR") {
+    return {
+      violence_category:
+        "Iznuda i prijetnja neovlaštenim objavljivanjem privatnih snimki (Sextortion)",
+      severity_level: "Kritično",
+      severity_code: "critical",
+      summary: `Analiza ukazuje na jasne elemente digitalne ucjene i prijetnje neovlaštenim dijeljenjem intimnog sadržaja s profila ${handle}. Prema ${profile.criminalCodeName.HR}, ovo predstavlja osnovu za žurnu kaznenu prijavu.`,
+      legal_mapping: profile.keyArticles.slice(0, 3).map((art) => ({
+        article: art.article,
+        title: art.topic,
+        relevance: `Odgovara izravnoj prijetnji objavljivanjem privatnog sadržaja radi iznuđivanja kontakta (${profile.names.HR}).`,
+      })),
+      extracted_evidence: [
+        {
+          timestamp: dateStr,
+          sender: handle,
+          summary: `Prijeteća poruka: "${snippet}${snippet.length >= 140 ? "..." : ""}"`,
+        },
+        {
+          timestamp: dateStr,
+          sender: handle,
+          summary: "Postavljen vremenski ultimatum i pritisak za uklanjanje blokade.",
+        },
+      ],
+      preservation_advice: [
+        "Ne brišite prepisku i ne blokirajte počinitelja prije nego što kopirate točnu URL poveznicu njegova profila.",
+        "Napravite snimke zaslona na kojima se jasno vide datum, vrijeme i identitet profila, bez izrezivanja.",
+        "Spremite izvorne datoteke u memoriju ili na sigurno mjesto radi eventualnog vještačenja metapodataka.",
+      ],
+      is_demo: true,
+      model_used: "Demo Mode (0 €)",
+    };
+  }
+
+  if (language === "BS" || language === "ME") {
+    const isMe = language === "ME";
+    return {
+      violence_category:
+        "Iznuda i prijetnja neovlaštenim objavljivanjem privatnih snimaka (Sextortion)",
+      severity_level: "Kritično",
+      severity_code: "critical",
+      summary: `Analiza ukazuje na jasne elemente digitalne ucjene i prijetnje neovlaštenim dijeljenjem intimnog sadržaja sa profila ${handle}. Prema ${profile.criminalCodeName[language]}, ovo predstavlja osnov za hitnu krivičnu prijavu.`,
+      legal_mapping: profile.keyArticles.slice(0, 3).map((art) => ({
+        article: art.article,
+        title: art.topic,
+        relevance: `Odgovara direktnoj prijetnji objavljivanjem privatnog sadržaja radi iznuđivanja kontakta (${profile.names[language]}).`,
+      })),
+      extracted_evidence: [
+        {
+          timestamp: dateStr,
+          sender: handle,
+          summary: `Prijeteća poruka: "${snippet}${snippet.length >= 140 ? "..." : ""}"`,
+        },
+        {
+          timestamp: dateStr,
+          sender: handle,
+          summary: "Postavljen vremenski ultimatum i pritisak za uklanjanje blokade.",
+        },
+      ],
+      preservation_advice: [
+        "Ne brišite prepisku i ne blokirajte počinioca prije nego što kopirate tačan URL link njegovog profila (korisničko ime se može promijeniti).",
+        isMe
+          ? "Napravite snimke ekrana na kojima se jasno vide datum, vrijeme i identitet profila, bez isijecanja."
+          : "Napravite snimke ekrana na kojima se jasno vide datum, vrijeme i identitet profila, bez isjecanja.",
+        "Sačuvajte originalne fajlove u memoriji ili na sigurnom mjestu radi eventualnog vještačenja metapodataka.",
+      ],
+      is_demo: true,
+      model_used: "Demo Mode (0 €)",
+    };
+  }
+
   return {
     violence_category:
       "Iznuda i pretnja neovlašćenim objavljivanjem privatnih snimaka (Sextortion)",
     severity_level: "Kritično",
     severity_code: "critical",
-    summary: `Analiza ukazuje na jasne elemente digitalne ucene i pretnje neovlašćenim deljenjem intimnog sadržaja sa profila ${handle}. Prema ${profile.criminalCodeName.BCMS}, ovo predstavlja osnov za hitnu krivičnu prijavu.`,
+    summary: `Analiza ukazuje na jasne elemente digitalne ucene i pretnje neovlašćenim deljenjem intimnog sadržaja sa profila ${handle}. Prema ${profile.criminalCodeName.SR}, ovo predstavlja osnov za hitnu krivičnu prijavu.`,
     legal_mapping: profile.keyArticles.slice(0, 3).map((art) => ({
       article: art.article,
       title: art.topic,
-      relevance: `Odgovara direktnoj pretnji objavljivanjem privatnog sadržaja radi iznuđivanja kontakta (${profile.names.BCMS}).`,
+      relevance: `Odgovara direktnoj pretnji objavljivanjem privatnog sadržaja radi iznuđivanja kontakta (${profile.names.SR}).`,
     })),
     extracted_evidence: [
       {
