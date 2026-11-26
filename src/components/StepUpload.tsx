@@ -222,11 +222,11 @@ export function StepUpload({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs sm:space-y-5 sm:p-6"
+      className="space-y-4 rounded-2xl border border-[#E6E1D6] bg-white p-4 shadow-xs sm:space-y-5 sm:p-6"
     >
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-lg font-bold text-slate-900 sm:text-xl">
+          <h1 className="text-lg font-bold tracking-tight text-[#132238] sm:text-xl">
             {t.title}
           </h1>
           <p className="mt-1 text-xs text-slate-600 sm:text-sm">{t.subtitle}</p>
@@ -244,26 +244,47 @@ export function StepUpload({
         </button>
       </div>
 
-      {/* Country Selector */}
+      {/* 1-Tap Country Pills */}
       <div>
-        <label
-          htmlFor="country-select"
-          className="mb-1.5 block text-sm font-semibold text-slate-800"
-        >
+        <span className="mb-2 block text-sm font-semibold text-[#132238]">
           {t.countryLabel}
-        </label>
-        <select
-          id="country-select"
-          value={country}
-          onChange={(e) => onCountryChange(e.target.value as CountryCode)}
-          className="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-3 text-sm font-medium text-slate-900 focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20 focus:outline-none"
+        </span>
+        <div
+          className="grid grid-cols-2 gap-2 sm:grid-cols-3"
+          role="radiogroup"
+          aria-label={t.countryLabel}
         >
-          {COUNTRY_ORDER.map((code) => (
-            <option key={code} value={code}>
-              {COUNTRIES[code].names[language]}
-            </option>
-          ))}
-        </select>
+          {COUNTRY_ORDER.map((code) => {
+            const active = country === code;
+            return (
+              <button
+                key={code}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => onCountryChange(code)}
+                className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-left transition-all ${
+                  active
+                    ? "border-[#0F766E] bg-[#0F766E]/8 text-[#132238] ring-1 ring-[#0F766E]"
+                    : "border-[#E6E1D6] bg-[#FBF9F6] text-slate-700 hover:border-slate-300"
+                }`}
+              >
+                <span className="truncate text-xs font-semibold sm:text-sm">
+                  {COUNTRIES[code].names[language]}
+                </span>
+                <span
+                  className={`ml-2 shrink-0 rounded px-1.5 py-0.5 font-mono text-[10px] font-bold ${
+                    active
+                      ? "bg-[#0F766E] text-white"
+                      : "bg-slate-200/80 text-slate-600"
+                  }`}
+                >
+                  {code}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Image Upload Dropzone (Mobile Gallery Friendly) */}

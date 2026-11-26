@@ -49,10 +49,13 @@ export function StepAnalysis({
       )}
 
       {/* Summary Header Card */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
+      <div className="rounded-2xl border border-[#E6E1D6] bg-white p-5 shadow-xs sm:p-6">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h1 className="text-lg font-bold text-slate-900 sm:text-xl">
+            <span className="font-mono text-[11px] font-bold tracking-widest text-[#0F766E] uppercase">
+              DOSSIER // 01
+            </span>
+            <h1 className="text-lg font-bold tracking-tight text-[#132238] sm:text-xl">
               {t.title}
             </h1>
             <p className="mt-0.5 text-sm text-slate-600">{t.subtitle}</p>
@@ -137,9 +140,10 @@ export function StepAnalysis({
       </div>
 
       {/* Legal Mapping */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
-        <div className="mb-3 flex items-center gap-2 text-slate-900">
-          <Scale className="h-5 w-5 text-teal-600" />
+      <div className="rounded-2xl border border-[#E6E1D6] bg-white p-5 shadow-xs sm:p-6">
+        <div className="mb-3 flex items-center gap-2 text-[#132238]">
+          <Scale className="h-5 w-5 text-[#0F766E]" />
+          <span className="font-mono text-xs font-bold text-[#0F766E]">02</span>
           <h2 className="text-base font-bold">{t.legalTitle}</h2>
         </div>
         <div className="space-y-3">
@@ -165,9 +169,10 @@ export function StepAnalysis({
       </div>
 
       {/* Extracted Timeline */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
-        <div className="mb-3 flex items-center gap-2 text-slate-900">
-          <Clock className="h-5 w-5 text-teal-600" />
+      <div className="rounded-2xl border border-[#E6E1D6] bg-white p-5 shadow-xs sm:p-6">
+        <div className="mb-3 flex items-center gap-2 text-[#132238]">
+          <Clock className="h-5 w-5 text-[#0F766E]" />
+          <span className="font-mono text-xs font-bold text-[#0F766E]">03</span>
           <h2 className="text-base font-bold">{t.timelineTitle}</h2>
         </div>
         <div className="space-y-3">

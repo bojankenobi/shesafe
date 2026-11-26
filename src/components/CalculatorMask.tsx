@@ -10,6 +10,7 @@ interface CalculatorMaskProps {
 
 export function CalculatorMask({ onUnlock, onWipeAll }: CalculatorMaskProps) {
   const [display, setDisplay] = useState("0");
+  const [historyLine, setHistoryLine] = useState("");
   const [prevValue, setPrevValue] = useState<number | null>(null);
   const [operator, setOperator] = useState<string | null>(null);
   const [waitingNext, setWaitingNext] = useState(false);
@@ -46,17 +47,21 @@ export function CalculatorMask({ onUnlock, onWipeAll }: CalculatorMaskProps) {
     const current = parseFloat(display);
     if (prevValue === null) {
       setPrevValue(current);
+      setHistoryLine(`${current} ${nextOp}`);
     } else if (operator && !waitingNext) {
       const result = compute(prevValue, current, operator);
-      setPrevValue(result);
-      setDisplay(String(Number(result.toFixed(8))));
+      const formatted = Number(result.toFixed(8));
+      setPrevValue(formatted);
+      setDisplay(String(formatted));
+      setHistoryLine(`${formatted} ${nextOp}`);
+    } else {
+      setHistoryLine(`${prevValue} ${nextOp}`);
     }
     setOperator(nextOp);
     setWaitingNext(true);
   };
 
   const handleEquals = async () => {
-    // Discreet shortcuts & PIN verification when no arithmetic operator is active
     if (prevValue === null && !operator) {
       if (display === "112" || display === "192" || display === "122") {
         window.location.href = `tel:${display}`;
@@ -69,9 +74,9 @@ export function CalculatorMask({ onUnlock, onWipeAll }: CalculatorMaskProps) {
           onUnlock();
           return;
         }
-        // Wrong PIN: silently wipe all data and reset display to 0
         onWipeAll();
         setDisplay("0");
+        setHistoryLine("");
         return;
       }
       return;
@@ -80,6 +85,7 @@ export function CalculatorMask({ onUnlock, onWipeAll }: CalculatorMaskProps) {
     if (prevValue === null || !operator) return;
     const current = parseFloat(display);
     const result = compute(prevValue, current, operator);
+    setHistoryLine(`${prevValue} ${operator} ${current} =`);
     setDisplay(String(Number(result.toFixed(8))));
     setPrevValue(null);
     setOperator(null);
@@ -88,6 +94,7 @@ export function CalculatorMask({ onUnlock, onWipeAll }: CalculatorMaskProps) {
 
   const handleClear = () => {
     setDisplay("0");
+    setHistoryLine("");
     setPrevValue(null);
     setOperator(null);
     setWaitingNext(false);
@@ -109,18 +116,20 @@ export function CalculatorMask({ onUnlock, onWipeAll }: CalculatorMaskProps) {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 p-4 text-white">
-      <div className="w-full max-w-xs rounded-3xl bg-slate-900 p-5 shadow-2xl ring-1 ring-slate-800">
-        <div className="mb-4 flex items-center justify-between text-xs text-slate-500">
-          <span>Calculator</span>
-          <span>STD</span>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0A0D12] p-4 text-white select-none">
+      <div className="w-full max-w-[330px] rounded-[2.25rem] bg-[#12161F] p-5 shadow-2xl ring-1 ring-white/10">
+        {/* Display */}
+        <div className="mb-5 flex h-28 flex-col justify-end rounded-2xl bg-[#0A0D12]/80 px-4 py-3 text-right">
+          <div className="min-h-5 truncate font-mono text-xs text-slate-500">
+            {historyLine}
+          </div>
+          <div className="mt-1 truncate font-mono text-4xl font-light tracking-tight text-white">
+            {display}
+          </div>
         </div>
 
-        <div className="mb-5 flex h-20 items-end justify-end overflow-hidden rounded-2xl bg-slate-950/60 px-4 py-3 text-right font-mono text-4xl font-light tracking-tight">
-          {display}
-        </div>
-
-        <div className="grid grid-cols-4 gap-2.5">
+        {/* Circular / Pill Keypad */}
+        <div className="grid grid-cols-4 gap-3">
           {buttons.flat().map((btn) => {
             const isOp = ["÷", "×", "-", "+"].includes(btn);
             const isTop = ["C", "±", "%"].includes(btn);
@@ -129,12 +138,12 @@ export function CalculatorMask({ onUnlock, onWipeAll }: CalculatorMaskProps) {
                 key={btn}
                 type="button"
                 onClick={() => onButtonClick(btn)}
-                className={`flex h-14 items-center justify-center rounded-2xl text-lg font-medium transition-colors active:scale-95 ${
+                className={`flex h-15 items-center justify-center rounded-full text-xl font-medium transition-transform active:scale-92 ${
                   isOp
-                    ? "bg-amber-500 text-white hover:bg-amber-600"
+                    ? "bg-amber-500 text-white hover:bg-amber-400"
                     : isTop
-                    ? "bg-slate-700 text-slate-100 hover:bg-slate-600"
-                    : "bg-slate-800 text-white hover:bg-slate-700"
+                    ? "bg-slate-600/80 text-slate-100 hover:bg-slate-600"
+                    : "bg-[#1F2533] text-white hover:bg-[#2A3244]"
                 }`}
               >
                 {btn}
@@ -145,21 +154,21 @@ export function CalculatorMask({ onUnlock, onWipeAll }: CalculatorMaskProps) {
           <button
             type="button"
             onClick={() => inputDigit("0")}
-            className="col-span-2 flex h-14 items-center justify-center rounded-2xl bg-slate-800 text-lg font-medium text-white hover:bg-slate-700 active:scale-95"
+            className="col-span-2 flex h-15 items-center justify-start rounded-full bg-[#1F2533] pl-7 text-xl font-medium text-white transition-transform hover:bg-[#2A3244] active:scale-95"
           >
             0
           </button>
           <button
             type="button"
             onClick={inputDot}
-            className="flex h-14 items-center justify-center rounded-2xl bg-slate-800 text-lg font-medium text-white hover:bg-slate-700 active:scale-95"
+            className="flex h-15 items-center justify-center rounded-full bg-[#1F2533] text-xl font-medium text-white transition-transform hover:bg-[#2A3244] active:scale-92"
           >
             .
           </button>
           <button
             type="button"
             onClick={handleEquals}
-            className="flex h-14 items-center justify-center rounded-2xl bg-amber-500 text-lg font-medium text-white hover:bg-amber-600 active:scale-95"
+            className="flex h-15 items-center justify-center rounded-full bg-amber-500 text-xl font-medium text-white transition-transform hover:bg-amber-400 active:scale-92"
           >
             =
           </button>

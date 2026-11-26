@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { PhoneCall, LogOut } from "lucide-react";
 import {
   AnalysisResult,
   CountryCode,
@@ -168,7 +169,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50">
+    <div className="flex min-h-screen flex-col bg-[#FBF9F6] pb-20 sm:pb-8">
       <Navbar
         language={language}
         onLanguageChange={setLanguage}
@@ -180,7 +181,7 @@ export default function HomePage() {
       <main className="mx-auto w-full max-w-4xl flex-1 space-y-5 px-3 py-5 sm:px-6 sm:py-7">
         <SafetyBanner language={language} />
 
-        {/* Stepper */}
+        {/* Editorial Stepper */}
         <nav aria-label="Progress" className="grid grid-cols-3 gap-2">
           {[
             { num: 1 as const, label: t.steps.upload },
@@ -192,12 +193,12 @@ export default function HomePage() {
             return (
               <div
                 key={item.num}
-                className={`rounded-xl border px-3 py-2 text-center text-xs font-semibold transition-colors sm:text-sm ${
+                className={`rounded-xl border px-3 py-2.5 text-center text-xs font-semibold transition-colors sm:text-sm ${
                   isActive
-                    ? "border-teal-600 bg-teal-600 text-white shadow-xs"
+                    ? "border-[#132238] bg-[#132238] text-white shadow-xs"
                     : isDone
-                    ? "border-teal-200 bg-teal-50 text-teal-800"
-                    : "border-slate-200 bg-white text-slate-500"
+                    ? "border-teal-300 bg-teal-50 text-teal-900"
+                    : "border-[#E6E1D6] bg-white text-slate-500"
                 }`}
               >
                 {item.label}
@@ -266,6 +267,26 @@ export default function HomePage() {
           onClose={() => setShowEmergency(false)}
         />
       )}
+
+      {/* Mobile Thumb-Zone Quick Action Bar */}
+      <div className="fixed inset-x-0 bottom-0 z-30 flex items-center gap-2 border-t border-[#E6E1D6] bg-white/95 px-3 py-2.5 backdrop-blur-sm sm:hidden">
+        <button
+          type="button"
+          onClick={() => setShowEmergency(true)}
+          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-amber-500 py-2.5 text-xs font-bold text-slate-950 shadow-xs active:scale-98"
+        >
+          <PhoneCall className="h-4 w-4" />
+          <span>{t.sosBtn}</span>
+        </button>
+        <button
+          type="button"
+          onClick={handleQuickExit}
+          className="flex flex-2 items-center justify-center gap-1.5 rounded-xl bg-red-600 py-2.5 text-xs font-bold text-white shadow-xs active:scale-98"
+        >
+          <LogOut className="h-4 w-4" />
+          <span>{t.quickExit}</span>
+        </button>
+      </div>
     </div>
   );
 }

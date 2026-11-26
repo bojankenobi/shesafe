@@ -104,12 +104,50 @@ export function StepExport({
 
   return (
     <div className="space-y-5">
-      {/* PDF Download Card */}
-      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:p-6">
-        <h1 className="text-lg font-bold text-slate-900 sm:text-xl">
+      {/* PDF Download Card + Visual Dossier Preview */}
+      <div className="rounded-2xl border border-[#E6E1D6] bg-white p-5 shadow-xs sm:p-6">
+        <h1 className="text-lg font-bold tracking-tight text-[#132238] sm:text-xl">
           {t.title}
         </h1>
         <p className="mt-1 text-sm text-slate-600">{t.subtitle}</p>
+
+        {/* Mini Visual Dossier Cover Preview */}
+        <div className="mt-4 overflow-hidden rounded-xl border border-[#E6E1D6] bg-[#FBF9F6]">
+          <div className="border-b-2 border-[#0F766E] bg-[#132238] px-4 py-3 text-white">
+            <p className="font-mono text-[10px] tracking-widest text-teal-300 uppercase">
+              PDF PREVIEW // {country}
+            </p>
+            <p className="mt-0.5 text-xs font-bold sm:text-sm">
+              {TRANSLATIONS[language].pdf.reportTitle}
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 px-4 py-3 text-xs text-slate-700 sm:grid-cols-3">
+            <div>
+              <span className="block text-[10px] font-semibold text-slate-400 uppercase">
+                {TRANSLATIONS[language].pdf.jurisdiction}
+              </span>
+              <span className="font-semibold text-[#132238]">
+                {countryProfile.names[language]}
+              </span>
+            </div>
+            <div>
+              <span className="block text-[10px] font-semibold text-slate-400 uppercase">
+                {TRANSLATIONS[language].pdf.category}
+              </span>
+              <span className="line-clamp-1 font-semibold text-[#132238]">
+                {analysis.violence_category}
+              </span>
+            </div>
+            <div className="col-span-2 sm:col-span-1">
+              <span className="block text-[10px] font-semibold text-slate-400 uppercase">
+                SHA-256 &amp; Media
+              </span>
+              <span className="font-mono text-xs font-semibold text-[#0F766E]">
+                {images.length} img • Unicode Ready
+              </span>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
           <button
