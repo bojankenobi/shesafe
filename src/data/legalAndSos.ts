@@ -110,6 +110,15 @@ export const COUNTRIES: Record<CountryCode, CountryLegalProfile> = {
         phone: "122 (Policija)",
         website: "https://unitedwomenbl.org",
       },
+      {
+        name: "Agencija za ravnopravnost spolova BiH",
+        role: {
+          BCMS: "Institucionalna podrška i zaštita od nasilja",
+          AL: "Mbështetje institucionale dhe mbrojtje",
+          MK: "Институционална поддршка и заштита",
+        },
+        website: "https://www.arsbih.gov.ba/",
+      },
     ],
   },
 
@@ -314,7 +323,16 @@ export const COUNTRIES: Record<CountryCode, CountryLegalProfile> = {
           AL: "Mbështetje ligjore dhe psikosociale",
           MK: "Правна и психосоцијална поддршка",
         },
-        website: "https://awenetwork.org",
+        website: "https://awenetwork.org/eng",
+      },
+      {
+        name: "iSIGURT.AL — CRCA / ECPAT Albania",
+        role: {
+          BCMS: "Centar za bezbedniji internet i podršku žrtvama",
+          AL: "Qendra për Internet më të Sigurt dhe mbështetje për viktimat",
+          MK: "Центар за побезбеден интернет и поддршка на жртви",
+        },
+        website: "https://www.crca.al/",
       },
       {
         name: "Policia e Shtetit — Njësia e Krimit Kibernetik",
@@ -324,6 +342,7 @@ export const COUNTRIES: Record<CountryCode, CountryLegalProfile> = {
           MK: "Итна пријава и сајбер криминал",
         },
         phone: "129",
+        website: "https://asp.gov.al/denonco-krimin-kompjuterik/",
       },
     ],
   },

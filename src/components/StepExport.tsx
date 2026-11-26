@@ -224,6 +224,20 @@ export function StepExport({
             </div>
           ))}
         </div>
+        <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-600">
+          <a
+            href="https://shesafe.online/en/baza-aktera"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 font-semibold text-teal-700 hover:underline"
+          >
+            <Globe className="h-3.5 w-3.5" />
+            <span>{t.directoryLink}</span>
+          </a>
+          <p className="mt-1.5 text-[11px] text-slate-500">
+            {t.directoryDisclaimer}
+          </p>
+        </div>
       </div>
 
       {/* Footer Actions */}

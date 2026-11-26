@@ -71,6 +71,8 @@ export interface TranslationDict {
     emailLabel: string;
     webLabel: string;
     hoursLabel: string;
+    directoryLink: string;
+    directoryDisclaimer: string;
     backBtn: string;
     clearAllBtn: string;
   };
@@ -214,6 +216,9 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       emailLabel: "Email",
       webLabel: "Veb-sajt",
       hoursLabel: "Radno vreme",
+      directoryLink: "Sve organizacije u regionu (SheSafe Online baza — 388 aktera)",
+      directoryDisclaimer:
+        "Ovo je informativni direktorijum, a ne hitna služba. U slučaju neposredne opasnosti pozovite lokalnu policiju.",
       backBtn: "Nazad na analizu",
       clearAllBtn: "Obriši sve iz memorije",
     },
@@ -360,6 +365,9 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       emailLabel: "Email",
       webLabel: "Uebfaqja",
       hoursLabel: "Orari",
+      directoryLink: "Të gjitha organizatat në rajon (Baza SheSafe Online — 388 aktorë)",
+      directoryDisclaimer:
+        "Ky është një drejtori informues, jo shërbim emergjence. Në rast rreziku të menjëhershëm kontaktoni policinë lokale.",
       backBtn: "Kthehu te analiza",
       clearAllBtn: "Fshi gjithçka nga memoria",
     },
@@ -506,6 +514,9 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       emailLabel: "Е-пошта",
       webLabel: "Веб-страница",
       hoursLabel: "Работно време",
+      directoryLink: "Сите организации во регионот (SheSafe Online база — 388 актери)",
+      directoryDisclaimer:
+        "Ова е информативен директориум, а не итна служба. Во случај на непосредна опасност повикајте локална полиција.",
       backBtn: "Назад кон анализа",
       clearAllBtn: "Избриши сè од меморија",
     },
