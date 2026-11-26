@@ -10,10 +10,18 @@ interface AnalyzeRequestBody {
   messageText?: string;
   suspectHandle?: string;
   incidentDate?: string;
-  provider?: "demo" | "openrouter" | "gemini";
+  provider?: "auto" | "demo" | "openrouter" | "gemini";
   apiKey?: string;
   model?: string;
 }
+
+const MAX_HOST_TRIALS = 2;
+const TRIAL_COOKIE = "calc_trials";
+const FREE_VISION_FALLBACKS = [
+  "qwen/qwen2.5-vl-72b-instruct:free",
+  "google/gemma-3-27b-it:free",
+  "meta-llama/llama-3.2-11b-vision-instruct:free",
+];
 
 const LANGUAGE_NAMES: Record<Language, string> = {
   BCMS: "Bosnian/Croatian/Montenegrin/Serbian (BCMS)",
@@ -99,9 +107,9 @@ export async function POST(req: NextRequest) {
     messageText = "",
     suspectHandle = "",
     incidentDate = "",
-    provider = "demo",
+    provider = "auto",
     apiKey = "",
-    model = "google/gemma-3-27b-it:free",
+    model = "qwen/qwen2.5-vl-72b-instruct:free",
   } = body;
 
   if (images.length === 0 && !messageText.trim()) {
@@ -111,15 +119,37 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const openRouterKey = apiKey || process.env.OPENROUTER_API_KEY || "";
-  const geminiKey = apiKey || process.env.GEMINI_API_KEY || "";
+  const usingUserKey = Boolean(apiKey.trim());
+  const openRouterKey = apiKey.trim() || process.env.OPENROUTER_API_KEY || "";
+  const geminiKey = apiKey.trim() || process.env.GEMINI_API_KEY || "";
 
-  const effectiveProvider =
-    provider === "demo" ||
-    (provider === "openrouter" && !openRouterKey) ||
-    (provider === "gemini" && !geminiKey)
-      ? "demo"
-      : provider;
+  let effectiveProvider: "demo" | "openrouter" | "gemini" = "demo";
+  if (provider === "openrouter" && openRouterKey) {
+    effectiveProvider = "openrouter";
+  } else if (provider === "gemini" && geminiKey) {
+    effectiveProvider = "gemini";
+  } else if (provider === "auto") {
+    if (openRouterKey) effectiveProvider = "openrouter";
+    else if (geminiKey) effectiveProvider = "gemini";
+  }
+
+  const currentTrials = Number(req.cookies.get(TRIAL_COOKIE)?.value || "0");
+  if (
+    effectiveProvider !== "demo" &&
+    !usingUserKey &&
+    currentTrials >= MAX_HOST_TRIALS
+  ) {
+    const limited = buildDemoAnalysis(
+      country,
+      language,
+      suspectHandle,
+      incidentDate,
+      messageText
+    );
+    limited.is_fallback = true;
+    limited.model_used = `Demo Fallback (${MAX_HOST_TRIALS}/${MAX_HOST_TRIALS} limit)`;
+    return NextResponse.json(limited);
+  }
 
   if (effectiveProvider === "demo") {
     return NextResponse.json(
@@ -148,41 +178,54 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      const response = await fetch(
-        "https://openrouter.ai/api/v1/chat/completions",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${openRouterKey}`,
-            "HTTP-Referer": "https://digital-witness.local",
-            "X-Title": "Digital Witness MVP",
-          },
-          body: JSON.stringify({
-            model,
-            temperature: 0.2,
-            messages: [
-              { role: "system", content: systemPrompt },
-              { role: "user", content: contentParts },
-            ],
-          }),
-        }
+      const candidates = Array.from(
+        new Set([model, ...FREE_VISION_FALLBACKS].filter(Boolean))
       );
 
-      if (!response.ok) {
-        throw new Error(`OpenRouter error: ${response.status}`);
+      for (const candidateModel of candidates) {
+        const response = await fetch(
+          "https://openrouter.ai/api/v1/chat/completions",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${openRouterKey}`,
+              "HTTP-Referer": "https://digital-witness.local",
+              "X-Title": "Digital Witness MVP",
+            },
+            body: JSON.stringify({
+              model: candidateModel,
+              temperature: 0.2,
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: contentParts },
+              ],
+            }),
+          }
+        );
+
+        if (!response.ok) continue;
+
+        const data = await response.json();
+        const raw = data?.choices?.[0]?.message?.content || "";
+        const parsed = parseJsonResponse(raw);
+        if (!parsed) continue;
+
+        parsed.is_demo = false;
+        parsed.model_used = candidateModel;
+        const res = NextResponse.json(parsed);
+        if (!usingUserKey) {
+          res.cookies.set(TRIAL_COOKIE, String(currentTrials + 1), {
+            httpOnly: true,
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24,
+            path: "/",
+          });
+        }
+        return res;
       }
 
-      const data = await response.json();
-      const raw = data?.choices?.[0]?.message?.content || "";
-      const parsed = parseJsonResponse(raw);
-      if (!parsed) {
-        throw new Error("Invalid JSON from OpenRouter");
-      }
-
-      parsed.is_demo = false;
-      parsed.model_used = model;
-      return NextResponse.json(parsed);
+      throw new Error("All OpenRouter vision candidates failed");
     }
 
     if (effectiveProvider === "gemini") {
@@ -234,7 +277,16 @@ export async function POST(req: NextRequest) {
 
       parsed.is_demo = false;
       parsed.model_used = geminiModel;
-      return NextResponse.json(parsed);
+      const res = NextResponse.json(parsed);
+      if (!usingUserKey) {
+        res.cookies.set(TRIAL_COOKIE, String(currentTrials + 1), {
+          httpOnly: true,
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24,
+          path: "/",
+        });
+      }
+      return res;
     }
   } catch {
     // Graceful fallback to Demo Mode so a hackathon demo never crashes on network/rate-limit errors

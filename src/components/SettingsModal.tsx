@@ -6,7 +6,7 @@ import { Language } from "@/types";
 import { TRANSLATIONS } from "@/data/translations";
 import { saveCustomPin } from "@/utils/pinAuth";
 
-export type AiProvider = "demo" | "openrouter" | "gemini";
+export type AiProvider = "auto" | "demo" | "openrouter" | "gemini";
 
 export interface AiSettings {
   provider: AiProvider;
@@ -77,13 +77,14 @@ export function SettingsModal({
               onChange={(e) => setProvider(e.target.value as AiProvider)}
               className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 focus:border-teal-600 focus:outline-none"
             >
+              <option value="auto">Auto (Server Key max 2x / Demo)</option>
               <option value="demo">{t.providerDemo}</option>
               <option value="openrouter">{t.providerOpenRouter}</option>
               <option value="gemini">{t.providerGemini}</option>
             </select>
           </div>
 
-          {provider !== "demo" && (
+          {(provider === "openrouter" || provider === "gemini") && (
             <>
               <div>
                 <label className="mb-1.5 block text-xs font-semibold text-slate-700">

@@ -38,9 +38,9 @@ export default function HomePage() {
   const [showEmergency, setShowEmergency] = useState(false);
   const [isMasked, setIsMasked] = useState(true);
   const [aiSettings, setAiSettings] = useState<AiSettings>({
-    provider: "demo",
+    provider: "auto",
     apiKey: "",
-    model: "google/gemma-3-27b-it:free",
+    model: "qwen/qwen2.5-vl-72b-instruct:free",
   });
 
   const lastEscRef = useRef<number>(0);
