@@ -177,6 +177,66 @@ export function StepUpload({
     }
   };
 
+  const handleFilesRef = useRef(handleFiles);
+  useEffect(() => {
+    handleFilesRef.current = handleFiles;
+  });
+
+  // Desktop Ctrl+V / Paste image anywhere in Step 1
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      const imageFiles: File[] = [];
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.startsWith("image/")) {
+          const file = items[i].getAsFile();
+          if (file) imageFiles.push(file);
+        }
+      }
+      if (imageFiles.length > 0) {
+        const dt = new DataTransfer();
+        imageFiles.forEach((f) => dt.items.add(f));
+        void handleFilesRef.current(dt.files);
+      }
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, []);
+
+  // 1-Tap Mobile Clipboard Image Paste
+  const handlePasteImageClipboard = async () => {
+    try {
+      if (!navigator.clipboard?.read) {
+        setErrorMsg(t.pasteImageEmpty);
+        return;
+      }
+      const items = await navigator.clipboard.read();
+      const imageFiles: File[] = [];
+      for (const item of items) {
+        const imgType = item.types.find((type) => type.startsWith("image/"));
+        if (imgType) {
+          const blob = await item.getType(imgType);
+          const ext = imgType.split("/")[1] || "png";
+          imageFiles.push(
+            new File([blob], `clipboard-${Date.now()}.${ext}`, {
+              type: imgType,
+            })
+          );
+        }
+      }
+      if (imageFiles.length === 0) {
+        setErrorMsg(t.pasteImageEmpty);
+        return;
+      }
+      const dt = new DataTransfer();
+      imageFiles.forEach((f) => dt.items.add(f));
+      await handleFiles(dt.files);
+    } catch {
+      setErrorMsg(t.pasteImageEmpty);
+    }
+  };
+
   const handleMessageChange = (val: string) => {
     onMessageTextChange(val);
     // Auto-extract @username or URL from pasted text if suspectHandle is empty
@@ -266,15 +326,25 @@ export function StepUpload({
         </select>
       </div>
 
-      {/* Image Upload Dropzone (Mobile Gallery Friendly) */}
+      {/* Image Upload Dropzone (Mobile Gallery Friendly + 1-Tap Clipboard Paste) */}
       <div>
-        <div className="mb-1.5 flex items-center justify-between">
+        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
           <label className="text-sm font-semibold text-slate-800">
             {t.uploadLabel}
           </label>
-          <span className="text-xs font-medium text-slate-500">
-            {t.uploadMax.replace("{count}", String(images.length))}
-          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handlePasteImageClipboard}
+              className="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-200 active:bg-slate-300"
+            >
+              <ClipboardPaste className="h-3.5 w-3.5 text-teal-600" />
+              <span>{t.pasteImageBtn}</span>
+            </button>
+            <span className="text-xs font-medium text-slate-500">
+              {t.uploadMax.replace("{count}", String(images.length))}
+            </span>
+          </div>
         </div>
 
         <div

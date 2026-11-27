@@ -21,6 +21,7 @@ import { EmergencyModal } from "@/components/EmergencyModal";
 import { generateEvidencePdf } from "@/utils/pdfGenerator";
 import { clearPinStorage } from "@/utils/pinAuth";
 import { createSyntheticDemoImage } from "@/utils/demoScreenshot";
+import { processUploadedImage } from "@/utils/imageCompressor";
 
 function readSavedLocale(): { language: Language; country: CountryCode } {
   if (typeof window === "undefined") {
@@ -118,10 +119,33 @@ export default function HomePage() {
     }
   };
 
-  // Register minimal PWA service worker
+  // Register minimal PWA service worker & claim any shared screenshots from share_target
   useEffect(() => {
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then((reg) => {
+          if (window.location.search.includes("shared=1")) {
+            const target = reg.active || navigator.serviceWorker.controller;
+            if (!target) return;
+            const channel = new MessageChannel();
+            channel.port1.onmessage = async (event) => {
+              const files = (event.data?.files || []) as File[];
+              if (files.length > 0) {
+                const processed = await Promise.all(
+                  files.slice(0, 5).map(processUploadedImage)
+                );
+                setImages((prev) => [...prev, ...processed].slice(0, 5));
+                setStep(1);
+                window.history.replaceState({}, "", "/");
+              }
+            };
+            target.postMessage({ type: "CLAIM_SHARED_IMAGES" }, [
+              channel.port2,
+            ]);
+          }
+        })
+        .catch(() => {});
     }
   }, []);
 

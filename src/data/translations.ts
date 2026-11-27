@@ -32,6 +32,8 @@ export interface TranslationDict {
     datePlaceholder: string;
     loadDemo: string;
     pasteBtn: string;
+    pasteImageBtn: string;
+    pasteImageEmpty: string;
     dictateBtn: string;
     dictateStop: string;
     dictateUnsupported: string;
@@ -175,6 +177,8 @@ const SR_BASE: TranslationDict = {
       datePlaceholder: "npr. 18.11.2026. oko 22:30",
       loadDemo: "Učitaj demo primer",
       pasteBtn: "Nalepi tekst",
+      pasteImageBtn: "Nalepi skrinšot",
+      pasteImageEmpty: "Nema slike u clipboard-u ili je pristup odbijen.",
       dictateBtn: "Diktiraj glasom",
       dictateStop: "Zaustavi diktat",
       dictateUnsupported: "Glasovni unos nije podržan u ovom pretraživaču.",
@@ -329,6 +333,8 @@ const AL_BASE: TranslationDict = {
       datePlaceholder: "p.sh. 18.11.2026 rreth orës 22:30",
       loadDemo: "Ngarko shembullin demo",
       pasteBtn: "Ngjit tekstin",
+      pasteImageBtn: "Ngjit pamjen",
+      pasteImageEmpty: "Nuk ka imazh në clipboard ose qasja u refuzua.",
       dictateBtn: "Dikto me zë",
       dictateStop: "Ndalo diktimin",
       dictateUnsupported: "Njohja e zërit nuk mbështetet në këtë shfletues.",
@@ -483,6 +489,8 @@ const MK_BASE: TranslationDict = {
       datePlaceholder: "пр. 18.11.2026 околу 22:30",
       loadDemo: "Вчитај демо пример",
       pasteBtn: "Залепи текст",
+      pasteImageBtn: "Залепи слика",
+      pasteImageEmpty: "Нема слика во clipboard или пристапот е одбиен.",
       dictateBtn: "Диктирај со глас",
       dictateStop: "Стоп диктирање",
       dictateUnsupported: "Гласовниот внес не е поддржан во овој прелистувач.",
@@ -622,6 +630,8 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       suspectPlaceholder: "npr. https://instagram.com/korisnik ili @ime",
       loadDemo: "Učitaj demo primjer",
       pasteBtn: "Nalijepi tekst",
+      pasteImageBtn: "Nalijepi snimak",
+      pasteImageEmpty: "Nema slike u clipboardu ili je pristup odbijen.",
       optionalToggle: "Detalji počinioca i vrijeme (automatski ili ručno)",
       expressBtn: "Brzi izvještaj (1 klik: Analiza + PDF)",
     },
@@ -675,6 +685,8 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
       dateLabel: "Približan datum i vrijeme (neobvezno)",
       loadDemo: "Učitaj demo primjer",
       pasteBtn: "Zalijepi tekst",
+      pasteImageBtn: "Zalijepi snimku",
+      pasteImageEmpty: "Nema slike u međuspremniku ili je pristup odbijen.",
       optionalToggle: "Detalji počinitelja i vrijeme (automatski ili ručno)",
       expressBtn: "Brzo izvješće (1 klik: Analiza + PDF)",
       validationError:
@@ -737,6 +749,8 @@ export const TRANSLATIONS: Record<Language, TranslationDict> = {
         "Nalijepite tekst prijetećih poruka, linkove ka objavama ili kratko opišite šta se desilo...",
       loadDemo: "Učitaj demo primjer",
       pasteBtn: "Nalijepi tekst",
+      pasteImageBtn: "Nalijepi snimak",
+      pasteImageEmpty: "Nema slike u clipboardu ili je pristup odbijen.",
       optionalToggle: "Detalji počinioca i vrijeme (automatski ili ručno)",
       expressBtn: "Brzi izvještaj (1 klik: Analiza + PDF)",
     },
