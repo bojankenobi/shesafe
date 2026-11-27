@@ -8,6 +8,7 @@ import {
   Mic,
   Square,
   Download,
+  Share2,
   AlertTriangle,
 } from "lucide-react";
 import { CountryCode, Language } from "@/types";
@@ -28,6 +29,12 @@ const POLICE_NUMBERS: Record<CountryCode, string> = {
   ALB: "129",
 };
 
+function formatDuration(seconds: number): string {
+  const m = String(Math.floor(seconds / 60)).padStart(2, "0");
+  const s = String(seconds % 60).padStart(2, "0");
+  return `${m}:${s}`;
+}
+
 export function EmergencyModal({
   language,
   country,
@@ -40,13 +47,19 @@ export function EmergencyModal({
   const [smsHref, setSmsHref] = useState<string>("");
 
   const [isRecording, setIsRecording] = useState(false);
+  const [elapsedSec, setElapsedSec] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [audioSha256, setAudioSha256] = useState<string | null>(null);
+
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     return () => {
       if (audioUrl) URL.revokeObjectURL(audioUrl);
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [audioUrl]);
 
@@ -58,10 +71,22 @@ export function EmergencyModal({
     setLocStatus("loading");
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const { latitude, longitude } = pos.coords;
+        const { latitude, longitude, accuracy } = pos.coords;
         const mapsLink = `https://maps.google.com/?q=${latitude},${longitude}`;
-        const msg = `SOS! Hitno mi je potrebna pomoc. Moja trenutna lokacija: ${mapsLink}`;
-        setSmsHref(`sms:?body=${encodeURIComponent(msg)}`);
+        const accText = accuracy ? ` (±${Math.round(accuracy)}m)` : "";
+        const msg = `${t.smsTemplate}${accText}: ${mapsLink}`;
+
+        let recipient = "";
+        try {
+          recipient = (localStorage.getItem("calc_trusted_contact") || "").replace(
+            /[^\d+]/g,
+            ""
+          );
+        } catch {
+          // Ignore storage errors
+        }
+
+        setSmsHref(`sms:${recipient}?body=${encodeURIComponent(msg)}`);
         setLocStatus("ready");
       },
       () => {
@@ -75,31 +100,85 @@ export function EmergencyModal({
     if (isRecording && recorderRef.current) {
       recorderRef.current.stop();
       setIsRecording(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
       return;
     }
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+      const preferredMime = MediaRecorder.isTypeSupported("audio/webm")
+        ? "audio/webm"
+        : MediaRecorder.isTypeSupported("audio/mp4")
+        ? "audio/mp4"
+        : "";
+
+      const recorder = preferredMime
+        ? new MediaRecorder(stream, { mimeType: preferredMime })
+        : new MediaRecorder(stream);
+
+      const ext = preferredMime.includes("mp4") ? "m4a" : "webm";
+      const outMime = preferredMime || "audio/webm";
       chunksRef.current = [];
 
       recorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunksRef.current.push(e.data);
       };
 
-      recorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+      recorder.onstop = async () => {
+        const blob = new Blob(chunksRef.current, { type: outMime });
+        const file = new File([blob], `evidence-audio.${ext}`, {
+          type: outMime,
+        });
+        if (audioUrl) URL.revokeObjectURL(audioUrl);
         setAudioUrl(URL.createObjectURL(blob));
+        setAudioFile(file);
+
+        try {
+          if (crypto?.subtle) {
+            const buf = await blob.arrayBuffer();
+            const digest = await crypto.subtle.digest("SHA-256", buf);
+            const hex = Array.from(new Uint8Array(digest))
+              .map((b) => b.toString(16).padStart(2, "0"))
+              .join("");
+            setAudioSha256(hex);
+          }
+        } catch {
+          setAudioSha256(null);
+        }
+
         stream.getTracks().forEach((track) => track.stop());
       };
 
+      setElapsedSec(0);
       recorder.start();
       recorderRef.current = recorder;
       setIsRecording(true);
+      timerRef.current = setInterval(() => {
+        setElapsedSec((prev) => prev + 1);
+      }, 1000);
     } catch {
       // Microphone permission denied
     }
   };
+
+  const handleShareAudio = async () => {
+    if (!audioFile || !navigator.share) return;
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [audioFile] })) {
+        await navigator.share({ files: [audioFile] });
+      }
+    } catch {
+      // User cancelled share
+    }
+  };
+
+  const canShareAudio =
+    typeof navigator !== "undefined" &&
+    "share" in navigator &&
+    audioFile !== null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 p-4 backdrop-blur-xs">
@@ -138,7 +217,7 @@ export function EmergencyModal({
               type="button"
               onClick={handleGetLocation}
               disabled={locStatus === "loading"}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3.5 text-sm font-semibold text-white hover:bg-slate-800"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#132238] px-4 py-3.5 text-sm font-semibold text-white hover:bg-slate-800"
             >
               <MapPin className="h-4 w-4 text-teal-400" />
               <span>{locStatus === "loading" ? t.locating : t.shareLocation}</span>
@@ -146,7 +225,7 @@ export function EmergencyModal({
           ) : (
             <a
               href={smsHref}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-3.5 text-sm font-bold text-white hover:bg-teal-700"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#0F766E] px-4 py-3.5 text-sm font-bold text-white hover:bg-teal-700"
             >
               <MapPin className="h-4 w-4" />
               <span>{t.locationReady}</span>
@@ -170,7 +249,9 @@ export function EmergencyModal({
             {isRecording ? (
               <>
                 <Square className="h-4 w-4 fill-red-600 text-red-600" />
-                <span>{t.stopRecording}</span>
+                <span>
+                  {t.stopRecording} ({formatDuration(elapsedSec)})
+                </span>
               </>
             ) : (
               <>
@@ -180,15 +261,35 @@ export function EmergencyModal({
             )}
           </button>
 
-          {audioUrl && (
-            <a
-              href={audioUrl}
-              download="evidence-audio.webm"
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-50 px-4 py-2.5 text-xs font-semibold text-teal-800 ring-1 ring-teal-200 hover:bg-teal-100"
-            >
-              <Download className="h-4 w-4" />
-              <span>{t.downloadAudio}</span>
-            </a>
+          {audioUrl && audioFile && (
+            <div className="space-y-2 rounded-xl border border-teal-200 bg-teal-50/70 p-3">
+              <audio controls src={audioUrl} className="h-9 w-full" />
+              {audioSha256 && (
+                <p className="truncate font-mono text-[10px] text-slate-600">
+                  SHA-256: {audioSha256}
+                </p>
+              )}
+              <div className="grid gap-2 sm:grid-cols-2">
+                <a
+                  href={audioUrl}
+                  download={audioFile.name}
+                  className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-white px-3 py-2 text-xs font-semibold text-teal-800 ring-1 ring-teal-200 hover:bg-teal-100"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  <span>{t.downloadAudio}</span>
+                </a>
+                {canShareAudio && (
+                  <button
+                    type="button"
+                    onClick={handleShareAudio}
+                    className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-[#132238] px-3 py-2 text-xs font-semibold text-white hover:bg-slate-800"
+                  >
+                    <Share2 className="h-3.5 w-3.5 text-teal-300" />
+                    <span>{t.shareAudio}</span>
+                  </button>
+                )}
+              </div>
+            </div>
           )}
         </div>
 

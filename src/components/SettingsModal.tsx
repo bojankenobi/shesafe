@@ -38,11 +38,28 @@ export function SettingsModal({
   const [apiKey, setApiKey] = useState(settings.apiKey);
   const [model, setModel] = useState(settings.model);
   const [newPin, setNewPin] = useState("");
+  const [trustedPhone, setTrustedPhone] = useState(() => {
+    try {
+      return localStorage.getItem("calc_trusted_contact") || "";
+    } catch {
+      return "";
+    }
+  });
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (/^\d{4,}$/.test(newPin.trim())) {
       await saveCustomPin(newPin.trim());
+    }
+    try {
+      const cleanedPhone = trustedPhone.trim();
+      if (cleanedPhone) {
+        localStorage.setItem("calc_trusted_contact", cleanedPhone);
+      } else {
+        localStorage.removeItem("calc_trusted_contact");
+      }
+    } catch {
+      // Ignore storage errors
     }
     onSave({ provider, apiKey: apiKey.trim(), model: model.trim() });
     onClose();
@@ -140,6 +157,20 @@ export function SettingsModal({
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-teal-600 focus:outline-none"
             />
             <p className="mt-1 text-[11px] text-slate-500">{t.pinHint}</p>
+          </div>
+
+          {/* Trusted Contact for SOS SMS */}
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold text-slate-700">
+              {t.trustedContactLabel}
+            </label>
+            <input
+              type="tel"
+              value={trustedPhone}
+              onChange={(e) => setTrustedPhone(e.target.value)}
+              placeholder={t.trustedContactPlaceholder}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-teal-600 focus:outline-none"
+            />
           </div>
 
           <div className="flex justify-end gap-2 pt-2">

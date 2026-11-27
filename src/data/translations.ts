@@ -90,6 +90,8 @@ export interface TranslationDict {
     pinLabel: string;
     pinPlaceholder: string;
     pinHint: string;
+    trustedContactLabel: string;
+    trustedContactPlaceholder: string;
     saveBtn: string;
     closeBtn: string;
     costNote: string;
@@ -105,6 +107,8 @@ export interface TranslationDict {
     recordAudio: string;
     stopRecording: string;
     downloadAudio: string;
+    shareAudio: string;
+    smsTemplate: string;
     pwaLimitationNote: string;
     closeBtn: string;
   };
@@ -236,6 +240,8 @@ const SR_BASE: TranslationDict = {
       pinLabel: "Tajni PIN za otključavanje digitrona (4+ cifara)",
       pinPlaceholder: "Podrazumevano: 1919",
       pinHint: "Unos pogrešnog PIN-a na digitronu (=) automatski briše sve podatke. Prečica 112= poziva hitnu pomoć.",
+      trustedContactLabel: "Broj osobe od poverenja za SOS SMS (opciono)",
+      trustedContactPlaceholder: "npr. +381601234567",
       saveBtn: "Sačuvaj za sesiju",
       closeBtn: "Zatvori",
       costNote:
@@ -252,6 +258,8 @@ const SR_BASE: TranslationDict = {
       recordAudio: "Snimi audio dokaz (uživo)",
       stopRecording: "Zaustavi snimanje",
       downloadAudio: "Preuzmi audio snimak",
+      shareAudio: "Pošalji audio (Share)",
+      smsTemplate: "SOS! Hitno mi je potrebna pomoc. Moja lokacija",
       pwaLimitationNote:
         "Napomena: Zbog bezbednosnih pravila telefona (iOS/Android), web aplikacija zahteva vaš dodir za poziv/SMS i ne može snimati dok je ekran zaključan.",
       closeBtn: "Zatvori",
@@ -386,6 +394,8 @@ const AL_BASE: TranslationDict = {
       pinLabel: "Kodi sekret PIN për zhbllokimin e kalkulatorit (4+ shifra)",
       pinPlaceholder: "Parazgjedhur: 1919",
       pinHint: "Vendosja e një PIN-i të gabuar (=) fshin automatikisht të gjitha të dhënat. Shkurtorja 112= thërret emergjencën.",
+      trustedContactLabel: "Numri i kontaktit të besuar për SMS SOS (opsionale)",
+      trustedContactPlaceholder: "p.sh. +355691234567",
       saveBtn: "Ruaj për sesionin",
       closeBtn: "Mbyll",
       costNote:
@@ -402,6 +412,8 @@ const AL_BASE: TranslationDict = {
       recordAudio: "Regjistro provë audio (live)",
       stopRecording: "Ndalo regjistrimin",
       downloadAudio: "Shkarko regjistrimin audio",
+      shareAudio: "Dërgo audion (Share)",
+      smsTemplate: "SOS! Kam nevoje urgjente per ndihme. Vendndodhja ime",
       pwaLimitationNote:
         "Shënim: Për shkak të rregullave të sigurisë së telefonit (iOS/Android), aplikacioni web kërkon prekjen tuaj për thirrje/SMS dhe nuk regjistron me ekran të kyçur.",
       closeBtn: "Mbyll",
@@ -536,6 +548,8 @@ const MK_BASE: TranslationDict = {
       pinLabel: "Таен PIN за отклучување на калкулаторот (4+ цифри)",
       pinPlaceholder: "Стандардно: 1919",
       pinHint: "Внесувањето погрешен PIN (=) автоматски ги брише сите податоци. Кратенка 112= повикува итна помош.",
+      trustedContactLabel: "Број на доверливо лице за SOS SMS (опционално)",
+      trustedContactPlaceholder: "пр. +38970123456",
       saveBtn: "Зачувај за сесијата",
       closeBtn: "Затвори",
       costNote:
@@ -552,6 +566,8 @@ const MK_BASE: TranslationDict = {
       recordAudio: "Сними аудио доказ (во живо)",
       stopRecording: "Запри снимање",
       downloadAudio: "Преземи аудио снимка",
+      shareAudio: "Испрати аудио (Share)",
+      smsTemplate: "SOS! Itno mi e potrebna pomos. Mojata lokacija",
       pwaLimitationNote:
         "Напомена: Поради безбедносните правила на телефонот (iOS/Android), веб-апликацијата бара ваш допир за повик/SMS и не може да снима при заклучен екран.",
       closeBtn: "Затвори",
